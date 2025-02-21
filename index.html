@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="./css/photon.css">
 </head>
 <body>
+    <!-- window -->
     <div class="window">
+        <!-- header -->
         <header class="toolbar toolbar-header">
             <div class="toolbar-actions">
                 <!-- button group -->
@@ -24,9 +26,53 @@
                         <span class="icon icon-to-end"></span>
                     </button>
                 </div>
+
+                <!-- 00:00 | 00:00 -->
+                <span class="margin-left:40px">
+                    <span id="time-left">00:00</span> | <span id="total-time">00:00</span>
+                </span>
+                <!--  Add button -->
+                <button class="btn btn-default btn-large pull-right">
+                    <span class="icon icon-plus icon-text"></span>Add
+                </button>
+
             </div>
         </header>
+        <!-- end of header -->
+        <!-- window-content -->
+        <div class="window-content">
+            <input type="file" style="display: none;" multiple>
+            <audio src=""></audio>
+            <div class="padding-more">
+                <h4></h4>
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Artist</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="table-body">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- end of padding-more -->
+        </div>
+        <!-- end of window-content -->
+         <footer class="toolbar toolbar-footer">
+            <div class="toolbar-actions">
+                <button class="btn btn-default pull-right">
+                    Clear Playlist
+                </button>
+            </div>
+         </footer>
     </div>
+    <!-- end of window -->
     
 </body>
 </html>
