@@ -2,6 +2,8 @@ const $ = require('jquery');
 const mm = require('music-metadata');
 
 var songNumber = 0;
+let playing = false;
+let currentlyPlayingIndex = null;
 
 const songData = {
     path: [],
@@ -88,22 +90,70 @@ async function musicSelected() {
                 $('#table-body').append(songRow);
                 songData.path[songNumber] = result.path;
                 songData.title[songNumber] = result.metadata.common.title;
+                currentlyPlaying = result.path;
                 songNumber++;
 
             });
     } catch (error) {
         console.error('Error processing files:', error);
     }
-    console.log(songData);
+    // console.log(songData);
 }
 
 function playSong(index) {
-   audioPlayer.src = songData.path[index]; 
-   audioPlayer.load();
-   audioPlayer.play();
-   $('h4').text(songData.title[index])
+    if (index !== currentlyPlayingIndex) {
+        audioPlayer.src = songData.path[index]; 
+        audioPlayer.load();
+        audioPlayer.play();
+        playing = true;
+        $('h4').text(songData.title[index])
+        updatePlayButton();
+        activateButton();
+        currentlyPlayingIndex = index;
+    } else if (index === currentlyPlayingIndex) {
+       if(audioPlayer.paused) {
+            audioPlayer.play();
+            playing = true;
+       } else {
+            audioPlayer.pause();
+            playing = false;
+       }
+       updatePlayButton();
+       activateButton();
+    }
 }
 
+function play() {
+    if (playing) {
+        audioPlayer.pause();
+        playing = false;
+    } else {
+        audioPlayer.play();
+        playing = true;
+    }
+    updatePlayButton();
+    activateButton();
+}
+
+function updatePlayButton() {
+    let playIcon = $('#play-button span');
+    if (playing) {
+        playIcon.removeClass('icon-play');
+        playIcon.addClass('icon-pause');
+    } else {
+        playIcon.removeClass('icon-pause');
+        playIcon.addClass('icon-play');
+    }
+}
+
+function activateButton() {
+    let playButton = $('#play-button');
+    if(playing) {
+        playButton.addClass('active');
+    } else {
+        playButton.removeClass('active');
+    }
+}
 
 // Helper function
 function secondsToTime(t) {
