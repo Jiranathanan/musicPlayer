@@ -1,6 +1,8 @@
 const $ = require('jquery');
 const mm = require('music-metadata');
 
+var songNumber = 0;
+
 const songData = {
     path: [],
     title: []
@@ -49,14 +51,13 @@ async function musicSelected() {
     let files = $('input').get(0).files;
     
     // Clear existing table content
-    $('#table-body').empty();
+    // $('#table-body').empty();
     
     // Create an array of promises
     const metadataPromises = Array.from(files).map(async (file, index) => {
         try {
             const metadata = await mm.parseFile(file.path, {native: true});
             return {
-                index: index + 1,
                 metadata: metadata,
                 path: file.path
             };
@@ -74,31 +75,33 @@ async function musicSelected() {
         results
             .filter(result => result !== null)
             .forEach(result => {
-                let i = result.index - 1; 
                 const duration = secondsToTime(result.metadata.format.duration);
+                const displayOrder = songNumber + 1;
                 const songRow = `
-                    <tr ondblclick="playSong(${i})">
-                        <td>${result.index}</td>
+                    <tr ondblclick="playSong(${songNumber})">
+                        <td>${displayOrder}</td>
                         <td>${result.metadata.common.title}</td>
                         <td>${result.metadata.common.artist}</td>
                         <td>${duration}</td>
                     </tr>
                 `;
                 $('#table-body').append(songRow);
-                songData.path[i] = result.path;
-                songData.title[i] = result.metadata.common.title;
+                songData.path[songNumber] = result.path;
+                songData.title[songNumber] = result.metadata.common.title;
+                songNumber++;
 
             });
     } catch (error) {
         console.error('Error processing files:', error);
     }
-    // console.log(songData);
+    console.log(songData);
 }
 
 function playSong(index) {
    audioPlayer.src = songData.path[index]; 
    audioPlayer.load();
    audioPlayer.play();
+   $('h4').text(songData.title[index])
 }
 
 
