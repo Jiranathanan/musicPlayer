@@ -1,6 +1,13 @@
 const $ = require('jquery');
 const mm = require('music-metadata');
 
+const songData = {
+    path: [],
+    title: []
+};
+
+const audioPlayer = $('audio').get(0);
+
 function chooseMusic() {
     // console.log("Choose Music");
     $('input').click();
@@ -50,7 +57,8 @@ async function musicSelected() {
             const metadata = await mm.parseFile(file.path, {native: true});
             return {
                 index: index + 1,
-                metadata: metadata
+                metadata: metadata,
+                path: file.path
             };
         } catch (error) {
             console.error('Error parsing metadata:', error);
@@ -66,17 +74,40 @@ async function musicSelected() {
         results
             .filter(result => result !== null)
             .forEach(result => {
+                let i = result.index - 1; 
+                const duration = secondsToTime(result.metadata.format.duration);
                 const songRow = `
-                    <tr>
+                    <tr ondblclick="playSong(${i})">
                         <td>${result.index}</td>
                         <td>${result.metadata.common.title}</td>
                         <td>${result.metadata.common.artist}</td>
-                        <td>${result.metadata.format.duration}</td>
+                        <td>${duration}</td>
                     </tr>
                 `;
                 $('#table-body').append(songRow);
+                songData.path[i] = result.path;
+                songData.title[i] = result.metadata.common.title;
+
             });
     } catch (error) {
         console.error('Error processing files:', error);
     }
+    // console.log(songData);
 }
+
+function playSong(index) {
+   audioPlayer.src = songData.path[index]; 
+   audioPlayer.load();
+   audioPlayer.play();
+}
+
+
+// Helper function
+function secondsToTime(t) {
+    return padZero(parseInt((t / (60)) % 60)) + ":" + 
+           padZero(parseInt((t) % 60));
+    }
+
+function padZero(v) {
+    return (v < 10) ? "0" + v : v;
+    }
