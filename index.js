@@ -124,6 +124,9 @@ function playSong(index) {
 }
 
 function play() {
+    if (currentlyPlayingIndex === null) {
+        return
+    }
     if (playing) {
         audioPlayer.pause();
         playing = false;
@@ -133,6 +136,24 @@ function play() {
     }
     updatePlayButton();
     activateButton();
+}
+
+function playNext() {
+    let nextSong = currentlyPlayingIndex + 1;
+    if(nextSong >= songData.path.length) {
+        nextSong = 0;
+    }
+    playSong(nextSong);
+}
+
+function playPrevious() {
+    let previousSong = currentlyPlayingIndex - 1;
+    if(previousSong < 0) {
+        previousSong = songData.path.length - 1; // make it to the last song, 
+        // if wanna stay at start set previousSong = 0;
+        currentlyPlayingIndex = null; // prevent confusion between pause and load a new song
+    }
+    playSong(previousSong);
 }
 
 function updatePlayButton() {
