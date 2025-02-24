@@ -199,7 +199,7 @@ function playPrevious() {
 function updateTime() {
     $('#time-left').text(secondsToTime(audioPlayer.currentTime));
     $('#total-time').text(secondsToTime(audioPlayer.duration));
-    console.log("tick");
+    // console.log("tick");
     if(audioPlayer.currentTime >= audioPlayer.duration) {
         playNext();
     }
