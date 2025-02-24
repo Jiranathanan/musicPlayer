@@ -5,6 +5,8 @@ var songNumber = 0;
 let playing = false;
 let currentlyPlayingIndex = null;
 
+let timer = null;
+
 const songData = {
     path: [],
     title: []
@@ -110,6 +112,8 @@ function playSong(index) {
         updatePlayButton();
         activateButton();
         currentlyPlayingIndex = index;
+        // set interval for timer to display song duration
+        timer = setInterval(updateTime, 1000);
     } else if (index === currentlyPlayingIndex) {
        if(audioPlayer.paused) {
             audioPlayer.play();
@@ -129,10 +133,12 @@ function play() {
     }
     if (playing) {
         audioPlayer.pause();
+        clearInterval(timer);
         playing = false;
     } else {
         audioPlayer.play();
         playing = true;
+        timer = setInterval(updateTime, 1000);
     }
     updatePlayButton();
     activateButton();
@@ -142,6 +148,7 @@ function playNext() {
     let nextSong = currentlyPlayingIndex + 1;
     if(nextSong >= songData.path.length) {
         nextSong = 0;
+        currentlyPlayingIndex = null; // prevent confusion between pause and load a new song
     }
     playSong(nextSong);
 }
@@ -154,6 +161,15 @@ function playPrevious() {
         currentlyPlayingIndex = null; // prevent confusion between pause and load a new song
     }
     playSong(previousSong);
+}
+
+function updateTime() {
+    $('#time-left').text(secondsToTime(audioPlayer.currentTime));
+    $('#total-time').text(secondsToTime(audioPlayer.duration));
+    // console.log("tick");
+    if(audioPlayer.currentTime >= audioPlayer.duration) {
+        playNext();
+    }
 }
 
 function updatePlayButton() {
