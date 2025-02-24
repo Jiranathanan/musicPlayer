@@ -103,6 +103,11 @@ async function musicSelected() {
 }
 
 function playSong(index) {
+    // clear any existing timer before setting a new one
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
     if (index !== currentlyPlayingIndex) {
         audioPlayer.src = songData.path[index]; 
         audioPlayer.load();
@@ -118,9 +123,13 @@ function playSong(index) {
        if(audioPlayer.paused) {
             audioPlayer.play();
             playing = true;
+            // restart timer when resuming
+            timer = setInterval(updateTime, 1000);
        } else {
             audioPlayer.pause();
             playing = false;
+            // clear timer when pausing
+            timer = null;
        }
        updatePlayButton();
        activateButton();
@@ -133,11 +142,17 @@ function play() {
     }
     if (playing) {
         audioPlayer.pause();
-        clearInterval(timer);
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
         playing = false;
     } else {
         audioPlayer.play();
         playing = true;
+        if (timer) {
+            clearInterval(timer);
+        }
         timer = setInterval(updateTime, 1000);
     }
     updatePlayButton();
@@ -145,6 +160,15 @@ function play() {
 }
 
 function playNext() {
+    if(currentlyPlayingIndex === null) {
+        return
+    }
+    // make sure to clear the timer when going to the next song
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
+
     let nextSong = currentlyPlayingIndex + 1;
     if(nextSong >= songData.path.length) {
         nextSong = 0;
@@ -154,6 +178,15 @@ function playNext() {
 }
 
 function playPrevious() {
+    if(currentlyPlayingIndex === null) {
+        return
+    }
+    // make sure to clear the timer when going to the previous song
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
+
     let previousSong = currentlyPlayingIndex - 1;
     if(previousSong < 0) {
         previousSong = songData.path.length - 1; // make it to the last song, 
@@ -166,7 +199,7 @@ function playPrevious() {
 function updateTime() {
     $('#time-left').text(secondsToTime(audioPlayer.currentTime));
     $('#total-time').text(secondsToTime(audioPlayer.duration));
-    // console.log("tick");
+    console.log("tick");
     if(audioPlayer.currentTime >= audioPlayer.duration) {
         playNext();
     }
@@ -192,6 +225,29 @@ function activateButton() {
     }
 }
 
+function clearPlaylist() {
+    clearInterval(timer);
+    $('#table-body').empty();
+    $('h4').text('');
+    audioPlayer.pause();
+    audioPlayer.src = '';
+    currentlyPlayingIndex = null;
+    playing = false;
+    updatePlayButton();
+    activateButton();
+    songNumber = 0;
+    songData.path = [];
+    songData.title = [];
+    resetDuration();
+}
+
+function resetDuration() {
+    setTimeout( () => {
+        $('#time-left').text('00:00');
+        $('#total-time').text('00:00');
+    }, 250)
+}
+
 // Helper function
 function secondsToTime(t) {
     return padZero(parseInt((t / (60)) % 60)) + ":" + 
@@ -201,3 +257,16 @@ function secondsToTime(t) {
 function padZero(v) {
     return (v < 10) ? "0" + v : v;
     }
+
+
+// Debugging
+const debugInterval = setInterval( () => {
+    console.log($('#total-time').html());
+}, 500);
+
+function stopDebugging() {
+    clearInterval(debugInterval);
+}
+
+// comment out when no need to debug the timer
+stopDebugging();
