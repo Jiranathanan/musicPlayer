@@ -1,3 +1,4 @@
+const { autoUpdater } = require('electron');
 const $ = require('jquery');
 const mm = require('music-metadata');
 
@@ -239,6 +240,11 @@ function clearPlaylist() {
     songData.path = [];
     songData.title = [];
     resetDuration();
+}
+
+function changeVolume(input) {
+    // console.log(input.value);
+    audioPlayer.volume = input.value;
 }
 
 function resetDuration() {

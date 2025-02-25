@@ -8,7 +8,7 @@
     <!-- Load jQuery from a CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        .theme-menu {
+        .theme-color {
             background-color: darkslategrey;
             color: lightgray;
         }
@@ -16,10 +16,10 @@
 </head>
 <body>
     <!-- window -->
-    <div class="window theme-menu" >
+    <div class="window theme-color" >
         <!-- header -->
         <header class="toolbar toolbar-header" >
-            <div class="toolbar-actions theme-menu" style="padding: 10px 2px;">
+            <div class="toolbar-actions" style="padding: 10px 2px; background-color: rgb(28, 57, 57)";>
                 <!-- button group -->
                 <div class="btn-group">
                     <!-- button -->
@@ -37,7 +37,8 @@
                 <!-- 00:00 | 00:00 -->
                 <span class="margin-left:40px">
                     <span id="time-left">00:00</span> | <span id="total-time">00:00</span>
-                    <span><small style="margin-left: 8px; margin-right: 0;">min</small><input type="range" style="transform: translate(5px, 7px); margin-left: 0;"><small style="margin-left: 10px;">max</small></span>
+                    <!-- volume control -->
+                    <span><small style="margin-left: 8px; margin-right: 0;">min</small><input type="range" min="0" max="1" step="0.01" style="transform: translate(5px, 7px); margin-left: 0;" oninput="changeVolume(this)"><small style="margin-left: 10px;">max</small></span>
                 </span>
                 <!--  Add button -->
                 <button class="btn btn-default btn-large pull-right" onclick="chooseMusic()">
