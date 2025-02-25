@@ -10,46 +10,60 @@ let timer = null;
 
 const songData = {
     path: [],
-    title: []
+    title: [],
+    artist: []
 };
 
 const audioPlayer = $('audio').get(0);
+
+// marquee Effect for song title
+let marqueeInterval = null;
+let marqueePosition = 0;
+const marqueeSpeed = 3; // pixels per tick, adjust to control speed
+
+function animateTitle() {
+    const titleElement = $('h4');
+    const containerWidth = titleElement.parent().width();
+    const titleWidth = titleElement.width();
+
+    // Only animate if the title is wider than its container
+    if (titleWidth > containerWidth) {
+        if(marqueeInterval) {
+            clearInterval(marqueeInterval);
+        }
+    }
+
+    // Start position - positioned fully at the right edge of the container
+    marqueePosition = containerWidth;
+    titleElement.css('transform', `translateX(0px)`);
+
+    // start the animation
+    marqueeInterval = setInterval( () => {
+        if (!playing) {
+            // stop animation if not playing
+            clearInterval(marqueeInterval);
+            marqueeInterval = null;
+            return;
+        }
+
+        marqueePosition -= marqueeSpeed;
+
+        // If the title has moved completely off the left side
+        if (marqueePosition < -titleWidth) {
+            // Reset to start just off the right side
+            marqueePosition = containerWidth;
+        }
+
+        titleElement.css('transform', `translateX(${marqueePosition}px)`);
+    }, 50); // update every 50ms for smooth animation
+
+}
+
 
 function chooseMusic() {
     // console.log("Choose Music");
     $('input').click();
 }
-
-// function musicSelected() {
-//     let files = $('input').get(0).files;
-//     // console.log(files[0].path)
-//     // console.log(typeof(files))
-//     for(let i = 0; i < files.length; i++) {
-//         let { path } = files[i];
-//         mm.parseFile(path, {native: true})
-//             .then((metadata) => {
-//                 // console.log(metadata)
-//                 console.log(metadata.common.title, metadata.common.artist, metadata.format.duration)
-
-//                 let songRow = `
-//                     <tr>
-//                         <td>${i + 1}</td>
-//                         <td>${metadata.common.title}</td>
-//                         <td>${metadata.common.artist}</td>
-//                         <td>${metadata.format.duration}</td>
-//                     </tr>
-//                 `;
-//                 $('#table-body').append(songRow);
-
-//             })
-//             .catch(error => {
-//                 console.error('Error parsing metadata:', error);
-//             }) 
-//         // console.log(files[i].name, files[i].path)
-//     }
-    
-    
-// }
 
 // Refactor this code with async function to solve no. order
 async function musicSelected() {
@@ -93,6 +107,7 @@ async function musicSelected() {
                 $('#table-body').append(songRow);
                 songData.path[songNumber] = result.path;
                 songData.title[songNumber] = result.metadata.common.title;
+                songData.artist[songNumber] = result.metadata.common.artist;
                 currentlyPlaying = result.path;
                 songNumber++;
 
@@ -103,44 +118,109 @@ async function musicSelected() {
     // console.log(songData);
 }
 
+// function playSong(index) {
+//     // clear any existing timer before setting a new one
+//     if (timer) {
+//         clearInterval(timer);
+//         timer = null;
+//     }
+//     if (index !== currentlyPlayingIndex) {
+//         audioPlayer.src = songData.path[index]; 
+//         audioPlayer.load();
+//         audioPlayer.play();
+//         playing = true;
+//         $('h4').text(songData.title[index])
+//         updatePlayButton();
+//         activateButton();
+//         currentlyPlayingIndex = index;
+//         // set interval for timer to display song duration
+//         timer = setInterval(updateTime, 1000);
+//     } else if (index === currentlyPlayingIndex) {
+//        if(audioPlayer.paused) {
+//             audioPlayer.play();
+//             playing = true;
+//             // restart timer when resuming
+//             timer = setInterval(updateTime, 1000);
+//        } else {
+//             audioPlayer.pause();
+//             playing = false;
+//             // clear timer when pausing
+//             timer = null;
+//        }
+//        updatePlayButton();
+//        activateButton();
+//     }
+// }
+
+// Modify your playSong function to start the animation
 function playSong(index) {
-    // clear any existing timer before setting a new one
-    if (timer) {
-        clearInterval(timer);
-        timer = null;
-    }
     if (index !== currentlyPlayingIndex) {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
         audioPlayer.src = songData.path[index]; 
         audioPlayer.load();
         audioPlayer.play();
         playing = true;
-        $('h4').text(songData.title[index])
+        $('h4').text(`${songData.title[index]} By ${songData.artist[index]}`);
         updatePlayButton();
         activateButton();
         currentlyPlayingIndex = index;
         // set interval for timer to display song duration
         timer = setInterval(updateTime, 1000);
+        // Start title animation
+        // Start title animation with a slight delay to allow text to render
+        setTimeout(animateTitle, 100);
     } else if (index === currentlyPlayingIndex) {
        if(audioPlayer.paused) {
             audioPlayer.play();
             playing = true;
-            // restart timer when resuming
             timer = setInterval(updateTime, 1000);
+            // Resume title animation
+            animateTitle();
        } else {
             audioPlayer.pause();
             playing = false;
-            // clear timer when pausing
+            clearInterval(timer);
             timer = null;
+            // Title animation will stop automatically since playing=false
        }
        updatePlayButton();
        activateButton();
     }
 }
 
+// function play() {
+//     if (currentlyPlayingIndex === null) {
+//         return
+//     }
+//     if (playing) {
+//         audioPlayer.pause();
+//         if (timer) {
+//             clearInterval(timer);
+//             timer = null;
+//         }
+//         playing = false;
+//     } else {
+//         audioPlayer.play();
+//         playing = true;
+//         if (timer) {
+//             clearInterval(timer);
+//         }
+//         timer = setInterval(updateTime, 1000);
+//     }
+//     updatePlayButton();
+//     activateButton();
+// }
+
+// Also modify your play function
 function play() {
     if (currentlyPlayingIndex === null) {
-        return
+        return;
     }
+    
     if (playing) {
         audioPlayer.pause();
         if (timer) {
@@ -148,6 +228,7 @@ function play() {
             timer = null;
         }
         playing = false;
+        // Title animation will stop automatically since playing=false
     } else {
         audioPlayer.play();
         playing = true;
@@ -155,10 +236,13 @@ function play() {
             clearInterval(timer);
         }
         timer = setInterval(updateTime, 1000);
+        // Resume title animation
+        animateTitle();
     }
     updatePlayButton();
     activateButton();
 }
+
 
 function playNext() {
     if(currentlyPlayingIndex === null) {
@@ -228,8 +312,13 @@ function activateButton() {
 
 function clearPlaylist() {
     clearInterval(timer);
+    if (marqueeInterval) {
+        clearInterval(marqueeInterval);
+        marqueeInterval = null;
+    }
     $('#table-body').empty();
     $('h4').text('');
+    $('h4').css('transform', 'translateX(0px)'); // Reset position
     audioPlayer.pause();
     audioPlayer.src = '';
     currentlyPlayingIndex = null;
@@ -239,6 +328,7 @@ function clearPlaylist() {
     songNumber = 0;
     songData.path = [];
     songData.title = [];
+    songData.artist = [];
     resetDuration();
 }
 

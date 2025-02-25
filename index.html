@@ -12,6 +12,20 @@
             background-color: darkslategrey;
             color: lightgray;
         }
+        /* container for the song title */
+        .title-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        /* style for the song title */
+        h4 {
+            white-space: nowrap;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -53,7 +67,9 @@
             <input type="file" style="display: none;" multiple onchange="musicSelected()">
             <audio src=""></audio>
             <div class="padding-more">
-                <h4 style="text-align: center;"></h4>
+                <div class="title-container">
+                    <h4></h4>
+                </div>
                 <div>
                     <!-- table -->
                     <table style="color: black !important;">
