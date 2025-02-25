@@ -7,13 +7,19 @@
     <link rel="stylesheet" href="./css/photon.css">
     <!-- Load jQuery from a CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .theme-menu {
+            background-color: darkslategrey;
+            color: lightgray;
+        }
+    </style>
 </head>
 <body>
     <!-- window -->
-    <div class="window">
+    <div class="window theme-menu" >
         <!-- header -->
-        <header class="toolbar toolbar-header">
-            <div class="toolbar-actions">
+        <header class="toolbar toolbar-header" >
+            <div class="toolbar-actions theme-menu" style="padding: 10px 2px;">
                 <!-- button group -->
                 <div class="btn-group">
                     <!-- button -->
@@ -31,6 +37,7 @@
                 <!-- 00:00 | 00:00 -->
                 <span class="margin-left:40px">
                     <span id="time-left">00:00</span> | <span id="total-time">00:00</span>
+                    <span><small style="margin-left: 8px; margin-right: 0;">min</small><input type="range" style="transform: translate(5px, 7px); margin-left: 0;"><small style="margin-left: 10px;">max</small></span>
                 </span>
                 <!--  Add button -->
                 <button class="btn btn-default btn-large pull-right" onclick="chooseMusic()">
@@ -41,14 +48,14 @@
         </header>
         <!-- end of header -->
         <!-- window-content -->
-        <div class="window-content">
+        <div class="window-content" style="display: flex; justify-content: center;">
             <input type="file" style="display: none;" multiple onchange="musicSelected()">
             <audio src=""></audio>
             <div class="padding-more">
-                <h4></h4>
+                <h4 style="text-align: center;"></h4>
                 <div>
                     <!-- table -->
-                    <table>
+                    <table style="color: black !important;">
                         <thead>
                             <!-- table head -->
                             <tr>
@@ -59,7 +66,7 @@
                             </tr>
                         </thead>
 
-                        <tbody id="table-body">
+                        <tbody id="table-body" style="background-color: rgb(28, 57, 57); color:lightgray;">
                             <!-- table body -->
                         </tbody>
                     </table>

@@ -52,7 +52,7 @@ function chooseMusic() {
 
 // Refactor this code with async function to solve no. order
 async function musicSelected() {
-    let files = $('input').get(0).files;
+    let files = $('input').get(1).files;
     
     // Clear existing table content
     // $('#table-body').empty();
